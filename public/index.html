@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{
+            padding:0;
+            margin:0;
+        }
+        table{
+            width:500px;
+            margin:10px auto;
+            border-collapse:collapse;/*边框合并模式*/
+            text-align:center;
+        }
+        td,th{
+            border:1px solid #333;
+        }
+        thead tr{
+            height:40px;
+            background-color: #cccccc;
+        }
+
+        form{
+            width:500px;
+            margin:10px auto;
+            border-collapse:collapse;/*边框合并模式*/
+            text-align:center;
+        }
+    </style>
+
+</head>
+<body>
+    <form action="">    
+        <input type="hidden" value="" name="recordId">
+        <select name='content'>
+            <option value="In progress">In progress</option>
+            <option value="Loan not in Loan IQ">Loan not in Loan IQ</option>
+            <option value="With CARM to remediate">With CARM to remediate</option>
+        </select>
+        <input type="button" value="Add" onclick="addNewComment()">    
+    </form>
+<table>
+    <thead>
+    <tr>
+        <th>record id</th>
+        <th>comment</th>
+        <th>datetime</th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    </tbody>
+</table>
+</body>
+</html>
+<script src="/public/javascripts/ajax.min.js"></script>
+<script>
+    // get parameter
+    let recordId ='0';
+    recordId = getQueryVariable('recordId');
+    
+    // get comment list
+    refreshTable();
+
+    function refreshTable(){
+        let request = ajax({ baseUrl: 'http://localhost:3000' });
+        let url = '/commentList/';
+        if(recordId){
+            url = url + recordId;
+        }else{
+            url = url + '1';
+        }
+        request.get(url).then(function(res){
+            updateTable(res);
+        });
+    }
+
+
+    //update table every 500 ms
+    setInterval(refreshTable,500);
+
+
+    //add new comment
+    function addNewComment(){
+        var form = document.querySelector('form');
+        ajax().post('http://localhost:3000/newComment',
+        {
+            recordId:recordId,
+            content:form.content.value 
+        })
+        .then(function(res){
+        })
+    }
+
+    // update table
+    function updateTable(datas){
+        // get table dom
+        var tbody=document.querySelector("tbody");
+
+        //clear table
+        var rowNum = tbody.rows.length;
+        for(i=0; i<rowNum; i++){
+            tbody.deleteRow(i);
+            rowNum=rowNum-1;
+            i=i-1;
+        }
+
+        //update table
+        for(var i=0;i<datas.length;i++)  
+        {
+            var tr=document.createElement("tr");
+            tbody.appendChild(tr);
+
+            //record id
+            var td=document.createElement("td");   
+            tr.appendChild(td);
+            td.innerHTML=datas[i].recordId;  
+
+           //content
+            var td1=document.createElement("td");   
+            tr.appendChild(td1);
+            td1.innerHTML=datas[i].content;
+            
+            //
+            //date time
+            var td2=document.createElement("td");   
+            tr.appendChild(td2);
+            var date1=new Date(datas[i].timestamp);
+            var date2=date1.toLocaleDateString().replace(/\//g, "-") + " " + date1.toTimeString().substr(0, 8); 
+            td2.innerHTML=date2; 
+
+        }
+
+        // if no item
+        if(datas.length==0){
+            var tr=document.createElement("tr");
+            tbody.appendChild(tr);
+
+            //record id
+            var td=document.createElement("td");
+            td.colSpan=3;   
+            tr.appendChild(td);
+            td.innerText='No any comment';
+        }
+    }
+
+
+    // get url parameter
+    function getQueryVariable(variable)
+    {
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i=0;i<vars.length;i++) {
+                var pair = vars[i].split("=");
+                if(pair[0] == variable){return pair[1];}
+        }
+        return(false);
+    }
+ </script>
