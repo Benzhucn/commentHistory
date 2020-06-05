@@ -31,7 +31,7 @@
     </style>
 
 </head>
-<body>
+<body style="text-align: center;">
     <form action="">    
         <input type="hidden" value="" name="recordId">
         <select name='content'>
@@ -54,6 +54,9 @@
 
     </tbody>
 </table>
+
+<input type="button" value="close" onclick="closeWindow()">
+
 </body>
 </html>
 <script src="/public/javascripts/ajax.min.js"></script>
@@ -61,12 +64,14 @@
     // get parameter
     let recordId ='0';
     recordId = getQueryVariable('recordId');
+
+    let host = window.location.host;
     
     // get comment list
     refreshTable();
 
     function refreshTable(){
-        let request = ajax({ baseUrl: 'http://35.192.130.253:3000' });
+        let request = ajax({ baseUrl: 'http://' + host });
         let url = '/commentList/';
         if(recordId){
             url = url + recordId;
@@ -86,7 +91,7 @@
     //add new comment
     function addNewComment(){
         var form = document.querySelector('form');
-        ajax().post('http://35.192.130.253:3000/newComment',
+        ajax().post('http://'+ host +'/newComment',
         {
             recordId:recordId,
             content:form.content.value 
@@ -158,5 +163,14 @@
                 if(pair[0] == variable){return pair[1];}
         }
         return(false);
+    }
+
+    function closeWindow(){
+        if (confirm("Are you sure to close this page?")){
+            window.opener=null;
+            window.open('','_self');
+            window.close();
+        }
+        else{}
     }
  </script>
