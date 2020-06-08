@@ -3,10 +3,6 @@ var router = express.Router();
 
 const {newComment,findCommentByRecordId} = require('../data');
 
-//default
-router.get('/', (req, res) => {
-  res.render('index',{title:'testing'});
-});
 
 // find all the comment under the record id
 router.use('/commentList/:recordId',async (req, res) =>{

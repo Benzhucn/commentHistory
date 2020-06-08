@@ -2,64 +2,71 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <style>
-        *{
-            padding:0;
-            margin:0;
-        }
-        table{
-            width:500px;
-            margin:10px auto;
-            border-collapse:collapse;/*边框合并模式*/
-            text-align:center;
-        }
-        td,th{
-            border:1px solid #333;
-        }
-        thead tr{
-            height:40px;
-            background-color: #cccccc;
-        }
-
-        form{
-            width:500px;
-            margin:10px auto;
-            border-collapse:collapse;/*边框合并模式*/
-            text-align:center;
-        }
-    </style>
-
+    <title>Comment History</title>  
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">      
+    <script src="/public/javascripts/ajax.min.js"></script>
+    <script src="/public/javascripts/jquery.min.js"></script>
+    <script src="/public/javascripts/bootstrap.min.js"></script>
 </head>
-<body style="text-align: center;">
-    <form action="">    
-        <input type="hidden" value="" name="recordId">
-        <select name='content'>
-            <option value="In progress">In progress</option>
-            <option value="Loan not in Loan IQ">Loan not in Loan IQ</option>
-            <option value="With CARM to remediate">With CARM to remediate</option>
-        </select>
-        <input type="button" value="Add" onclick="addNewComment()">    
-    </form>
-<table>
-    <thead>
-    <tr>
-        <th>record id</th>
-        <th>comment</th>
-        <th>datetime</th>
-    </tr>
-    </thead>
+<body >
+    <div class="container" style="width: 600px;">
+        <div class="row" > 
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Add new comment </h3>
+                </div>
+                <div class="panel-body">
+                    <form action="" class="form-horizontal" role="form"> 
+                        <div class="form-group">
+                            <select name='content' class="form-control" style="width: 300PX;">
+                                <option value="In progress">In progress</option>
+                                <option value="With CARM team to remediate">With CARM team to remediate</option>
+                                <option value="With RM to remediate">With RM to remediate</option>
+                                <option value="Loan not in Loan IQ">Loan not in Loan IQ</option>
+                                <option value="FAM set to No as no Docs/Account info">FAM set to No as no Docs/Account info</option>
+                                <option value="Pending Docs">Pending Docs</option>
+                                <option value="No/Pending KYC">No/Pending KYC</option>
+                                <option value="CARD Mismatch">CARD Mismatch</option>
+                                <option value="Not a GBM client">Not a GBM client</option>
+                                <option value="Mail to RM reply awaited">Mail to RM reply awaited</option>
+                                <option value="Duplicate product approved to same entity">Duplicate product approved to same entity</option>
+                                <option value="CMG">CMG</option>
+                            </select>
+                        </div>   
+                        <input type="hidden" value="" name="recordId">
+                
+                        <input type="button" class="btn btn-danger" value="Add" onclick="addNewComment()">    
+                    </form>
+                </div>
+            </div>            
+        </div>
 
-    <tbody>
-
-    </tbody>
-</table>
-
-<input type="button" value="close" onclick="closeWindow()">
+        <div class="row" style="width: 600px;">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Comment History</h3>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-striped table-hover" >
+                        <thead>
+                        <tr>
+                            <th>SI No.</th>
+                            <th>Comment</th>
+                            <th>Date time</th>
+                        </tr>
+                        </thead>                    
+                        <tbody>                    
+                        </tbody>
+                    </table>  
+                </div>
+                <div class="panel-footer"><input type="button" class="btn btn-danger" value="close" onclick="closeWindow()"> </div>
+            </div>  
+        </div>
+    </div>
 
 </body>
 </html>
-<script src="/public/javascripts/ajax.min.js"></script>
+
 <script>
     // get parameter
     let recordId ='0';
@@ -122,7 +129,7 @@
             //record id
             var td=document.createElement("td");   
             tr.appendChild(td);
-            td.innerHTML=datas[i].recordId;  
+            td.innerHTML=i+1;  
 
            //content
             var td1=document.createElement("td");   
