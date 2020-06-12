@@ -9,59 +9,65 @@
     <script src="/public/javascripts/bootstrap.min.js"></script>
 </head>
 <body >
-    <div class="container" style="width: 600px;">
+    <div class="container" style="width: 630px;">
         <div class="row" > 
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Add new comment </h3>
+                    <h3 class="panel-title">Comment: <span id="commentId"></span></h3>
                 </div>
                 <div class="panel-body">
-                    <form action="" class="form-horizontal" role="form"> 
-                        <div class="form-group">
-                            <select name='content' class="form-control" style="width: 300PX;">
-                                <option value="In progress">In progress</option>
-                                <option value="With CARM team to remediate">With CARM team to remediate</option>
-                                <option value="With RM to remediate">With RM to remediate</option>
-                                <option value="Loan not in Loan IQ">Loan not in Loan IQ</option>
-                                <option value="FAM set to No as no Docs/Account info">FAM set to No as no Docs/Account info</option>
-                                <option value="Pending Docs">Pending Docs</option>
-                                <option value="No/Pending KYC">No/Pending KYC</option>
-                                <option value="CARD Mismatch">CARD Mismatch</option>
-                                <option value="Not a GBM client">Not a GBM client</option>
-                                <option value="Mail to RM reply awaited">Mail to RM reply awaited</option>
-                                <option value="Duplicate product approved to same entity">Duplicate product approved to same entity</option>
-                                <option value="CMG">CMG</option>
-                            </select>
-                        </div>   
-                        <input type="hidden" value="" name="recordId">
-                
-                        <input type="button" class="btn btn-danger" value="Add" onclick="addNewComment()">    
-                    </form>
+                    <!--Add comment-->
+                    <div class="panel panel-primary">
+                        <div class="panel-body">
+                            <form action="" class="form-horizontal" role="form"> 
+                                <div class="input-group">
+                                    <select name='content' class="form-control" style="width: 300PX;">
+                                        <option value="In progress">In progress</option>
+                                        <option value="With CARM team to remediate">With CARM team to remediate</option>
+                                        <option value="With RM to remediate">With RM to remediate</option>
+                                        <option value="Loan not in Loan IQ">Loan not in Loan IQ</option>
+                                        <option value="FAM set to No as no Docs/Account info">FAM set to No as no Docs/Account info</option>
+                                        <option value="Pending Docs">Pending Docs</option>
+                                        <option value="No/Pending KYC">No/Pending KYC</option>
+                                        <option value="CARD Mismatch">CARD Mismatch</option>
+                                        <option value="Not a GBM client">Not a GBM client</option>
+                                        <option value="Mail to RM reply awaited">Mail to RM reply awaited</option>
+                                        <option value="Duplicate product approved to same entity">Duplicate product approved to same entity</option>
+                                        <option value="CMG">CMG</option>
+                                    </select>
+                                    <input type="hidden" value="" name="recordId">
+                                    <span style="width: 20px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                        
+                                    <input type="button" class="btn btn-danger" value="Add" onclick="addNewComment()"> 
+                                </div>   
+   
+                            </form>
+                        </div>
+                    </div> 
+
+                    <!--commenet history-->
+                    <div class="panel panel-primary">
+                        <div class="panel-body">
+                            <div style="max-height:400px;width:580px;overflow:auto;background:#EEEEEE;">
+                                <table class="table table-striped table-hover" >
+                                    <thead>
+                                    <tr>
+                                        <th>SI No.</th>
+                                        <th>Comment</th>
+                                        <th>Date time</th>
+                                    </tr>
+                                    </thead>                    
+                                    <tbody>                    
+                                    </tbody>
+                                </table>                          
+                            </div>   
+                        </div>
+                        <div class="panel-footer"><input type="button" class="btn btn-danger" value="close" onclick="closeWindow('Are you sure to close the page ?')"> </div>
+                    </div>  
                 </div>
-            </div>            
+            </div>           
         </div>
 
-        <div class="row" style="width: 600px;">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Comment History</h3>
-                </div>
-                <div class="panel-body">
-                    <table class="table table-striped table-hover" >
-                        <thead>
-                        <tr>
-                            <th>SI No.</th>
-                            <th>Comment</th>
-                            <th>Date time</th>
-                        </tr>
-                        </thead>                    
-                        <tbody>                    
-                        </tbody>
-                    </table>  
-                </div>
-                <div class="panel-footer"><input type="button" class="btn btn-danger" value="close" onclick="closeWindow()"> </div>
-            </div>  
-        </div>
     </div>
 
 </body>
@@ -69,8 +75,14 @@
 
 <script>
     // get parameter
-    let recordId ='0';
+
+    alert(getHost(document.referrer));
+    let recordId ='0', passCode='';
     recordId = getQueryVariable('recordId');
+    passCode = getQueryVariable('passCode');
+    
+    let commentCtl = document.getElementById("commentId");
+    commentCtl.innerText=recordId;
 
     let host = window.location.host;
     
@@ -78,32 +90,39 @@
     refreshTable();
 
     function refreshTable(){
-        let request = ajax({ baseUrl: 'http://' + host });
+        let request = ajax({ baseUrl: 'https://' + host });
         let url = '/commentList/';
-        if(recordId){
+        if(recordId && passCode){
             url = url + recordId;
+            url = url + "/" + passCode;
         }else{
-            url = url + '1';
+            closeWindow();
         }
         request.get(url).then(function(res){
-            updateTable(res);
+            if(res.statusCode ==200){
+                updateTable(res.data);
+            }
+            else{
+                closeWindow('The facility not found!');
+            }
         });
     }
 
 
     //update table every 500 ms
-    setInterval(refreshTable,500);
+    //setInterval(refreshTable,500);
 
 
     //add new comment
     function addNewComment(){
         var form = document.querySelector('form');
-        ajax().post('http://'+ host +'/newComment',
+        ajax().post('https://'+ host +'/newComment',
         {
             recordId:recordId,
             content:form.content.value 
         })
         .then(function(res){
+            refreshTable();
         })
     }
 
@@ -172,12 +191,25 @@
         return(false);
     }
 
-    function closeWindow(){
-        if (confirm("Are you sure to close this page?")){
+    function closeWindow(message){
+        if (confirm(message)){
             window.opener=null;
             window.open('','_self');
             window.close();
         }
         else{}
+    }
+
+    function getHost (url) { 
+        var host = "null";
+        if(typeof url == "undefined"
+                     || null == url)
+                url = window.location.href;
+        var regex = /.*\:\/\/([^\/]*).*/;
+        var match = url.match(regex);
+        if(typeof match != "undefined"
+                        && null != match)
+                host = match[1];
+        return host;
     }
  </script>
